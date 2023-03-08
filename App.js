@@ -1,15 +1,16 @@
-import React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, Button, Image } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
+import React from "react";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View, TextInput, Button, Image } from "react-native";
+import MapView, { Marker } from "react-native-maps";
+import * as Location from "expo-location";
+import Icon from "react-native-vector-icons/FontAwesome";
 
-const API_KEY = '452df1420641110cce47849f0de42d25';
+const API_KEY = "452df1420641110cce47849f0de42d25";
 
 export default function App() {
   const [location, setLocation] = React.useState(null);
   const [errorMsg, setErrorMsg] = React.useState(null);
-  const [searchText, setSearchText] = React.useState('');
+  const [searchText, setSearchText] = React.useState("");
   const [markers, setMarkers] = React.useState([]);
   const [weatherData, setWeatherData] = React.useState(null);
   const mapRef = React.useRef(null);
@@ -43,8 +44,8 @@ export default function App() {
   React.useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permissão para acessar a localização foi negada');
+      if (status !== "granted") {
+        setErrorMsg("Permissão para acessar a localização foi negada");
         return;
       }
 
@@ -56,12 +57,15 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <StatusBar hidden />
+      {/* status bar sem aparecer os icones e trasnparente */}
+      <StatusBar style="auto" hidden={true} translucent={true} />
+
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
           placeholder="Pesquisar localização"
           onChangeText={setSearchText}
+          onSubmitEditing={searchLocation}
         />
         <Button title="Pesquisar" onPress={searchLocation} />
       </View>
@@ -84,10 +88,7 @@ export default function App() {
               }}
               title="Minha localização"
             >
-              <Image
-                source={require('./assets/blue-pin.png')}
-                style={{ width: 30, height: 30 }}
-              />
+              <Icon name="map-marker" size={50} color="blue" />
             </Marker>
             {markers.map((marker, index) => (
               <Marker
@@ -98,10 +99,7 @@ export default function App() {
                 }}
                 title={searchText}
               >
-                <Image
-                  source={require('./assets/red-pin.png')}
-                  style={{ width: 30, height: 30 }}
-                />
+                <Icon name="map-marker" size={50} color="red" />
               </Marker>
             ))}
           </MapView>
@@ -110,11 +108,22 @@ export default function App() {
               <Text>Temperatura: {weatherData.main.temp} °C</Text>
               <Text>Umidade: {weatherData.main.humidity}%</Text>
               <Text>Velocidade do vento: {weatherData.wind.speed} m/s</Text>
+              <Text>
+                Nascer do sol:{" "}
+                {new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString()}
+              </Text>
+              <Text>
+                Pôr do sol:{" "}
+                {new Date(weatherData.sys.sunset * 1000).toLocaleTimeString()}
+              </Text>
+              <Text>Pressão: {weatherData.main.pressure} hPa</Text>
+              <Text>Sensação térmica: {weatherData.main.feels_like} °C</Text>
+              <Text>Descrição: {weatherData.weather[0].description}</Text>
             </View>
           )}
         </>
       ) : (
-        <Text>{errorMsg || 'Carregando...'}</Text>
+        <Text>{errorMsg || "Carregando..."}</Text>
       )}
     </View>
   );
@@ -123,17 +132,17 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0",
     padding: 10,
   },
   searchInput: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 10,
     borderRadius: 5,
     marginRight: 10,
@@ -142,7 +151,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   weatherContainer: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     padding: 10,
   },
 });
